@@ -1,0 +1,17 @@
+- name: Test SSH connection to GCE
+  hosts: gce
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Ping the server
+      ansible.builtin.ping:
+    - name: Fix dpkg issues before proceeding
+      ansible.builtin.command: dpkg --configure -a
+      register: dpkg_result
+      changed_when: dpkg_result.rc != 0
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+    - name: Upgrade all packages
+      ansible.builtin.apt:
+        upgrade: dist
